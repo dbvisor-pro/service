@@ -5,6 +5,8 @@ services:
     build:
       context: docker
       dockerfile: Dockerfile
+    depends_on:
+      - database
     networks:
       - app-network
     healthcheck:
@@ -41,9 +43,9 @@ services:
     image: node:18
     stdin_open: true
     ports:
-      - ${FRONTEND_PORT}:3000
+      - ${FRONTEND_PORT:-3000}:3000
     working_dir: /frontend
-    command: 'bash -c "yarn build && yarn start"'
+    command: 'bash -c "yarn install && yarn build && yarn start"'
     volumes:
       - ./src/frontend:/frontend
     tty: true

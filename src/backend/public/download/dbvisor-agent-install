@@ -2,7 +2,7 @@
 
 APP_VERSION='latest'
 APP_GIT_REPO_NAME="db-manager-server-symfony"
-APP_DOWNLOAD_LINK="https://app.dbvisor.pro/download/${APP_GIT_REPO_NAME}-${APP_VERSION}.zip"
+APP_DOWNLOAD_LINK="https://dbvisor.pro/download/${APP_GIT_REPO_NAME}-${APP_VERSION}.zip"
 
 APP_NAME="dbvisor-agent"
 APP_DIR=".dbvisor-agent"

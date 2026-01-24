@@ -58,10 +58,24 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 			echo "The db is now ready and reachable"
 		fi
 
-		if [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
-			bin/console doctrine:migrations:migrate --no-interaction
+	if [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
+		bin/console doctrine:migrations:migrate --no-interaction || echo "Migrations may have already been applied"
+	fi
+
+	# Generate JWT keys if they don't exist
+	if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then
+		# Check if JWT_PASSPHRASE is set in .env file
+		if grep -q "^JWT_PASSPHRASE=" .env && grep -q "^JWT_PASSPHRASE=.*[^[:space:]]" .env; then
+			echo "Generating JWT keys..."
+			mkdir -p config/jwt
+			bin/console lexik:jwt:generate-keypair --overwrite --no-interaction 2>/dev/null || {
+				echo "Note: JWT key generation may need to be run manually"
+			}
+		else
+			echo "Note: JWT_PASSPHRASE not set in .env. JWT keys will not be generated automatically."
 		fi
 	fi
+fi
 
 #	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 #	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
