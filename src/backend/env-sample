@@ -43,3 +43,6 @@ JWT_PASSPHRASE=
 ## Required
 ADMIN_PATH=
 APP_URL=http://localhost/
+
+
+MAILER_DSN=
