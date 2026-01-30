@@ -200,20 +200,9 @@ echo ""
 
 # Step 6: Install frontend dependencies
 echo -e "${YELLOW}[6/6] Installing frontend dependencies...${NC}"
-# Clean yarn cache and node_modules to avoid ENOTEMPTY / pattern unpack conflicts
-docker compose exec -T frontend sh -c '
-    yarn cache clean 2>/dev/null || true
-    rm -rf node_modules
-    rm -rf /usr/local/share/.cache/yarn/v6 2>/dev/null || true
-' 2>/dev/null || true
-
-# Use project-local cache to avoid ENOTEMPTY / unpack conflicts; skip husky in Docker
-docker compose exec -T -e YARN_CACHE_FOLDER=/frontend/.yarn-cache -e HUSKY=0 frontend yarn install --frozen-lockfile || {
-    echo -e "${YELLOW}Yarn install had issues. Trying with cache clean and no frozen lockfile...${NC}"
-    docker compose exec -T -e YARN_CACHE_FOLDER=/tmp/yarn-cache -e HUSKY=0 frontend sh -c 'yarn cache clean 2>/dev/null; yarn install' || {
-        echo -e "${YELLOW}Trying npm instead...${NC}"
-        docker compose exec -T -e HUSKY=0 frontend npm ci 2>/dev/null || docker compose exec -T -e HUSKY=0 frontend npm install
-    }
+docker compose exec -T frontend yarn install --frozen-lockfile || {
+    echo -e "${YELLOW}Warning: Frontend dependencies installation had issues. Trying alternative...${NC}"
+    docker compose exec -T frontend yarn install
 }
 echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
 echo ""
